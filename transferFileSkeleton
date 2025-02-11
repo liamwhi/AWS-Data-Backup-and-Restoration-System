@@ -1,3 +1,6 @@
+# Language: Python
+# Use Case: Backing up an S3 Bucket Folder to another S3 Bucket
+
 import boto3
 import json
 
