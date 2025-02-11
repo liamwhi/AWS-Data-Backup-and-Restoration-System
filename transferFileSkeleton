@@ -7,10 +7,10 @@ import json
 s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
-    source_bucket = ""  # **Input source bucket here**
-    destination_bucket = ""  # **Input destination bucket here**
-    source_prefix = ""  # **Input source folder here**
-    destination_prefix = ""  # **Input new or destination folder here**
+    source_bucket = "target-automatedfroms3"  # **Input source bucket here**
+    destination_bucket = "backups-automatedfroms3"  # **Input destination bucket here**
+    source_prefix = "HR/"  # **Input source folder here**
+    destination_prefix = "HR-Backup/"  # **Input new or destination folder here**
 
     try:
         # Ensure destination folder exists by creating empty object
