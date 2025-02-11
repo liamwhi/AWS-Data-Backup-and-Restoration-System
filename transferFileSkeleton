@@ -1,0 +1,42 @@
+import boto3
+import json
+
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+    source_bucket = ""  # **Input source bucket here**
+    destination_bucket = ""  # **Input destination bucket here**
+    source_prefix = ""  # **Input source folder here**
+    destination_prefix = ""  # **Input new or destination folder here**
+
+    try:
+        # Ensure destination folder exists by creating empty object
+        s3.put_object(Bucket=destination_bucket, Key=destination_prefix)
+
+        # List all objects in the source "folder" (prefix)
+        response = s3.list_objects_v2(Bucket=source_bucket, Prefix=source_prefix)
+        
+        if 'Contents' not in response:
+            return {
+                'statusCode': 404,
+                'body': json.dumps(f'No files found in {source_bucket}/{source_prefix}')
+            }
+
+        for obj in response['Contents']:
+            file_key = obj['Key']  # Full path of the file in source bucket
+            new_key = file_key.replace(source_prefix, destination_prefix, 1)  # Update path for destination
+
+            # Copy the file to the destination bucket
+            copy_source = {'Bucket': source_bucket, 'Key': file_key}
+            s3.copy_object(Bucket=destination_bucket, CopySource=copy_source, Key=new_key)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(f'All files from {source_bucket}/{source_prefix} copied to {destination_bucket}/{destination_prefix}')
+        }
+
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps(f'Error: {str(e)}')
+        }
